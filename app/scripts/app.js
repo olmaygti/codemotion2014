@@ -4,7 +4,8 @@ angular.module('codemotion', [
   'ngResource',
   'ui.router',
   'codemotion.configuration',
-  'codemotion.services'
+  'codemotion.services',
+  'codemotion.models'
 ]).config(['$sceDelegateProvider', '$httpProvider',
     function($sceDelegateProvider, $httpProvider) {
         $sceDelegateProvider.resourceUrlWhitelist([
