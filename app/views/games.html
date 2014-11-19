@@ -1,0 +1,50 @@
+<div class="row">
+
+    <div class="col-xs-12 col-sm-6 col-md-5 col-md-offset-1 text-left">
+        <h1>All Games</h1>
+    </div>
+</div>
+
+<div class="row text-center">
+
+    <div class="odb_loading active pagination" data-ng-show="gamesLoading" style="top: 90px">
+        <div><div><div></div></div></div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-10 col-md-offset-1 col-lg-10 col-lg-offset-1">
+        <p></p>
+    </div>
+
+    <!-- NOTE: At every 5 elements, this class set needs to repeat -->
+
+    <!--  is which will repeat in every 5 elements, the first of every row -->
+
+    <div ng-repeat="g in games"
+         class="col-xs-4 col-sm-3 col-md-2 col-lg-2"
+         data-ng-class="{'col-md-offset-1 col-lg-offset-1': (($index % 5) == 0)}">
+
+        <a class="game" ui-sref="showGame({ gameId: g.id })">
+            <img odb-default-image="imagePlaceHolder" data-ng-src="{{g.imageUrl}}" class="game-icon bordered-icon"/>
+            <p class="name">{{g.name}}</p>
+            <p class="type"><small>{{getCategoriesAsString(g, 'displayName')}}&nbsp;</small></p>
+        </a>
+
+    </div>
+
+</div>
+
+<div class="row" data-ng-if="!gamesLoading">
+    <div class="col-xs-12 text-center">
+        <ul class="pagination">
+            <li data-ng-class="{disabled: pagination.selectedPage === 1}">
+                <a data-ng-click="showPage(pagination.selectedPage - 1)">«</a>
+            </li>
+            <li data-ng-class="{'active': (p.number == pagination.selectedPage)}"  ng-repeat="p in pagination.pages" ng-click="showPage(p.number)">
+                <a>{{p.number}}</a>
+            </li>
+            <li data-ng-class="{disabled: pagination.selectedPage === pagination.pages.length}">
+                <a ng-click="showPage(pagination.selectedPage + 1)">»</a>
+            </li>
+        </ul>
+    </div>
+</div>

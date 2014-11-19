@@ -1,0 +1,92 @@
+<div class="col-md-9 col-md-offset-1" bindonce>
+
+    <ng-include src="'/templates/games/game_header.html'"></ng-include>
+
+    <h2><span data-bo-text="translation.game.overview.game_data"/></h2>
+    <br>
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="220"><span data-bo-text="translation.game.overview.developer_name"/></th>
+                <th width="270"><span data-bo-text="translation.game.overview.developer_serial"/></th>
+                <th width="300"><span data-bo-text="translation.game.overview.developer_url"/></th>
+                <th width="120"><span data-bo-text="translation.game.overview.developer_visible"/></th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+
+            <td>{{game.developmentStudio.displayName}}&nbsp;&nbsp;({{game.developmentStudio.id}})</td>
+            <td>{{game.developmentStudio.serial}}</td>
+            <td><a href="{{game.developmentStudio.url}}" target="_blank">{{game.developmentStudio.url}}</a></td>
+            <td>{{game.developmentStudio.visible?'Visible':'Hidden'}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <table class="table">
+        <thead>
+        <tr>
+            <th width="220"><span data-bo-text="translation.game.overview.game_archetype"/></th>
+            <th width="270"><span data-bo-text="translation.game.overview.game_id"/></th>
+            <th width="300"><span data-bo-text="translation.game.overview.game_engine_variation"/></th>
+            <th width="120"><span data-bo-text="translation.game.overview.game_rtp"/></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr data-ng-repeat="sa in game.archetype.subArchetypes">
+            <td>{{game.archetype.displayName}}</td>
+            <td>{{game.archetype.id}}</td>
+            <td>
+                <div data-ng-if="!sa.comment || sa.comment.indexOf('Obsolete') != 0" > {{sa.displayName}} </div>
+                <div data-ng-if="sa.comment.indexOf('Obsolete') == 0" > {{sa.displayName}} <i>(Obsolete)</i> </div>
+            </td>
+            <td>{{sa.rtp}}%</td>
+        </tr>
+        </tbody>
+    </table>
+    <br>
+    <h2><span data-bo-text="translation.game.overview.operators_section"></span> {{game.name}}</h2>
+    <br>
+    <table class="table table-dropdown" data-ng-show="game.hostOperators.length !== 0">
+        <thead>
+            <tr>
+                <th class="sorter"
+                    data-bo-text="translation.game.overview.operator_header"
+                    data-ng-init="sortColumn = 'brandDisplayName'; reverse=false;"
+                    data-ng-click="sortColumn = 'brandDisplayName'; reverse=!reverse"
+                    data-ng-class="{true: 'active'}['brandDisplayName' == sortColumn] + ' ' + reverse">
+                </th>
+                <th style="cursor:auto; width: 100px;" bo-text="translation.global.table_headers.id"></th>
+                <th style="cursor:auto; width: 300px;" bo-text="translation.game.overview.installation_date_header"></th>
+                <th style="cursor:auto; width: 300px" bo-text="translation.game.overview.exclusivity_header"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="operator in game.hostOperators | orderBy:sortColumn:reverse" class="casino_list">
+                <td>
+                    <span ng-bind-html="getImage(operator, 'imageUrl', 48)"></span> &nbsp; &nbsp;
+                    {{operator.brandDisplayName}}
+                </td>
+                <td style="width:100px">{{operator.id}}</td>
+                <td style="width:300px">{{operator.gameInstallationDate}}</td>
+                <td style="text-align:left; width:300px;">
+                    <span data-ng-show="operator.hasExclusivity" style="padding:3px;">
+                        <span class="glyphicon glyphicon-star" style="padding-right: 3px; color:gold;"></span>
+                        <a bo-text="translation.game.overview.exclusivity_link"
+                            data-ui-sref="showGame.marketplace.distributionRights({gameId: game.id, operatorId: operator.id})">
+                        </a>
+                    </span>
+                    <span data-ng-show="!operator.hasExclusivity">-</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div data-ng-show="game.hostOperators.length === 0" style="padding-bottom: 20px; padding-left: 5px">
+        <span bo-text="translation.game.overview.no_operators"></span> {{game.name}}.
+    </div>
+
+</div>

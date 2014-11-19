@@ -1,0 +1,160 @@
+ 
+    <div class="col-xs-8">
+        <h2>GAME PROFILE</h2>
+    </div>
+    <div class="col-xs-4 text-right" style="margin-top:15px">
+        <span ng-switch="data.editingProfile">
+            <span ng-switch-when="false">
+                <button type="button" class="btn btn-primary"
+                    data-ng-click="switchToEdit(true)"
+                    data-ng-class="{disabled: loadingFlag || disabledEditing}">
+                        Edit
+                </button>
+            </span>
+            <span ng-switch-when="true">
+                <button type="button" class="btn"
+                    data-ng-click="switchToEdit(false)"
+                    data-ng-class="{disabled:saving}">
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-success"
+                        data-ng-click="save()"
+                        data-ng-class="{disabled:saving}">
+                        Save
+                </button>
+            </span>
+        </span>
+    </div>
+
+    <div class="col-xs-12">
+
+    </div>
+
+    <div class="odb_loading active" style="clear:both;" data-ng-show="data.loadingGame" style="top:-30px">
+        <div><div><div></div></div></div>
+    </div>
+
+    </div>
+    <div class="row" data-ng-show="!data.loadingGame"data.loadingGame"" style="margin:0" ng-cloak>
+
+        <div class="form-horizontal" data-ng-switch="data.editingProfile">
+
+            <div class="form-group">
+
+                <label class="col-sm-3 control-label">Synopsis</label>
+
+                <div class="col-sm-9" data-ng-switch-when="false">
+                    <p class="form-control-static">{{game.profile.synopsis}}</p>
+                </div>
+
+                <div class="col-sm-9" data-ng-switch-when="true">
+                    <input type="text" data-ng-model="game.profile.synopsis" class="form-control"/>
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label class="col-sm-3 control-label">Description</label>
+
+                <div class="col-sm-9" data-ng-switch-when="false">
+                        <p class="form-control-static">{{game.profile.descriptionShort}}</p>
+                </div>
+
+                <div class="col-sm-9" data-ng-switch-when="true">
+                        <textarea class="form-control" rows="6" data-ng-model="game.profile.descriptionShort"></textarea>
+                </div>
+
+            </div>
+
+            <label class="col-sm-3 control-label">VIDEO</label>
+
+            <div class="col-sm-9" data-ng-switch-when="false">
+                <p class="form-control-static">{{game.profile.videoUrl}}</p>
+            </div>
+
+            <div class="col-sm-9" data-ng-switch-when="true">
+                <input type="text" data-ng-model="game.profile.videoUrl" class="form-control"/>
+            </div>
+
+
+            <label class="col-sm-3 control-label">{{ translation.game.play.video.video_preview }}</label>
+
+            <div class="col-sm-9">
+                    <iframe data-ng-show="game.profile.videoUrl != ''"
+                            src="{{game.profile.videoUrl}}"
+                            data-video-src="{{game.profile.videoUrl}}"
+                            width="628"
+                            height="360"
+                            frameborder="0"
+                            webkitAllowFullScreen
+                            mozallowfullscreen
+                            allowFullScreen>
+                    </iframe>
+            </div>
+
+             <div class="form-group">
+
+                <label class="col-sm-3 control-label">Background Colour</label>
+
+                <div class="col-sm-9" data-ng-switch-when="false">
+                        <p class="form-control-static">{{game.profile.backgroundColour}}</p>
+                </div>
+
+                <div class="col-sm-9" data-ng-switch-when="true">
+                        <input type="text" class="form-control" rows="6" data-ng-model="game.profile.backgroundColour"></input>
+                </div>
+
+            </div>
+
+        </div>
+
+        <h2><span data-bo-text="translation.game.overview.operators_section"></span> {{game.name}}</h2>
+    <br>
+    <table class="table table-dropdown" data-ng-show="game.hostOperators.length !== 0">
+        <thead>
+            <tr>
+                <th class="sorter"
+                    data-bo-text="translation.game.overview.operator_header"
+                    data-ng-init="sortColumn = 'brandDisplayName'; reverse=false;"
+                    data-ng-click="sortColumn = 'brandDisplayName'; reverse=!reverse"
+                    data-ng-class="{true: 'active'}['brandDisplayName' == sortColumn] + ' ' + reverse">
+                </th>
+                <th style="cursor:auto; width: 100px;">ID</th>
+                <th style="cursor:auto; width: 300px;">Installation Date</th>
+                <th style="cursor:auto; width: 300px">Exclusivity</th>
+                <th style="cursor:auto; width: 300px">Visible</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-ng-repeat="operator in game.hostOperators | orderBy:sortColumn:reverse" class="casino_list">
+                <td>
+                    <span ng-bind-html="getImage(operator, 'imageUrl', 48)"></span> &nbsp; &nbsp;
+                    {{operator.brandDisplayName}}
+                </td>
+                <td style="width:100px">{{operator.id}}</td>
+                <td style="width:300px">{{operator.gameInstallationDate}}</td>
+                <td style="text-align:left; width:300px;">
+                    <span data-ng-show="operator.hasExclusivity" style="padding:3px;">
+                        <span class="glyphicon glyphicon-star" style="padding-right: 3px; color:gold;"></span>
+                    </span>
+                    <span data-ng-show="!operator.hasExclusivity">-</span>
+                </td>
+                <td style="width:300px">
+                    <div class="toggle-bg toggle-alternate {{operator.visible}}"
+                         ng-class="{disabled: !data.editingProfile}">
+                        <label ng-class="operator.visible">{{operator.visible}}</label>
+                        <input data-ng-disabled="!data.editingProfile" type="radio" name="toggle" value="off"
+                               ng-model="operator.visible">
+                        <input data-ng-disabled="!data.editingProfile" type="radio" name="toggle" value="on"
+                               ng-model="operator.visible">
+                        <span class="switch" ng-class="operator.visible"></span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+

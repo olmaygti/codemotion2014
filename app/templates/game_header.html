@@ -1,0 +1,21 @@
+<div>
+
+    <div class="col-md-12 game-section">
+        <div class="game-icon overview-icon" style="">
+            <img width="64" height="64" class="img-round" style="margin-right:16px" data-ng-src="{{game.imageUrl}}"/>
+        </div>
+        <h1>{{game.name}}</h1>
+        <p style="margin-top:-6px">ID: {{game.id}} &nbsp; | &nbsp; {{getCategoriesAsString('displayName')}} </p>
+
+    </div>
+
+</div>
+
+<div class="row">
+
+    <div data-ng-show="game.isLive" class="col-md-12">
+        <p class="entity-status live">Live</p>
+    </div>
+
+</div>
+<br>
