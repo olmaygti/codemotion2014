@@ -2,7 +2,7 @@
     "appName": "codemotion",
     "appTitle": "Angular Resourcess Playground",
     "appVersion": "1.0",
-    "backend_url":"http://private-90ac-codemotion.apiary-mock.com",
+    "backend_url":"http://localhost:8080",
     "authenticationEndpoint": "http://localhost:8080/oauth/authenticate/odobo?response_type=token&client_id=994e8f96523141a49f3921493a44c28196b05404dc08448a812aa486edd55128&redirect_uri=http://localhost:9000/authcallback.html",
     "validationEndpoint": "http://localhost:8080/api/validate"
 }

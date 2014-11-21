@@ -22,10 +22,10 @@ angular.module('codemotion', [
         AuthService.isLoggedIn()
         // AuthService returns a promise that will be rejected when user is not logged in
         .catch(function () {
-            // if (!(next.name === 'login' || next.name ==='forbidden')) {
-            //     event.preventDefault();
-            //     $window.location = $rootScope.authenticationEndpoint;
-            // }
+            if (!(next.name === 'login' || next.name ==='forbidden')) {
+                event.preventDefault();
+                $window.location = $rootScope.authenticationEndpoint;
+            }
         });
     });
   }

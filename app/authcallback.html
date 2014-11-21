@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Receiving authentication</title>
+</head>
+<body>
+<p>Finishing authentication...</p>
+
+<script src="bower_components/angular/angular.js"></script>
+<script>
+
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+        return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+
+    console.log("Auth")
+    window.location.href = '/#/login/?token=' + getParameterByName('access_token') +
+        '&error=' + getParameterByName('error') +
+        '&message=' + getParameterByName('message');
+
+</script>
+
+</body>
+</html>

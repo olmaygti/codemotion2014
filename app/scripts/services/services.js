@@ -8,7 +8,7 @@
         function ($rootScope, $http, $timeout, $q, APP_URLS, authHeaders) {
             function storeUser(data) {
                 // Next step, wrap local storage with angular cache!!
-                $rootScope.user = new User(data);
+                $rootScope.user = data;
                 if (!_(localStorage).isUndefined()) {
                     localStorage.user = JSON.stringify(data);
                 }
@@ -20,7 +20,7 @@
                 if (!_(localStorage).isUndefined()) {
                     stringUser = localStorage.user;
                     if (!_(stringUser).isUndefined()) {
-                        return new User(JSON.parse(stringUser));
+                        return JSON.parse(stringUser);
                     }
                 }
             }
