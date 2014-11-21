@@ -14,6 +14,7 @@
         })
         .constant('API_URLS', {
             GAMES: '@@backendUrl/games',
+            OPERATOR: '@@backendUrl/games/:gameId/operator/:id',
             GAME_PROFILE: '@@backendUrl/games/:game_id/profile/',
             SCREENSHOTS: '@@backendUrl/games/:game_id/screenshots',
             ICONS: '@@backendUrl/games/:game_id/icons',

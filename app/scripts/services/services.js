@@ -2,6 +2,102 @@
     "use strict";
 
     angular.module('codemotion.services',[])
+    .value('authHeaders', {})
+    .factory('AuthService',['$rootScope', '$http', '$timeout', '$q', 'APP_URLS', 'authHeaders',
+
+        function ($rootScope, $http, $timeout, $q, APP_URLS, authHeaders) {
+            function storeUser(data) {
+                // Next step, wrap local storage with angular cache!!
+                $rootScope.user = new User(data);
+                if (!_(localStorage).isUndefined()) {
+                    localStorage.user = JSON.stringify(data);
+                }
+                return $rootScope.user;
+            }
+
+            function getUserFromStorage() {
+                var stringUser;
+                if (!_(localStorage).isUndefined()) {
+                    stringUser = localStorage.user;
+                    if (!_(stringUser).isUndefined()) {
+                        return new User(JSON.parse(stringUser));
+                    }
+                }
+            }
+
+            function setHeadersForUser(user) {
+                if (user) {
+                    authHeaders['Authorization'] = 'Bearer ' + user.access_token;
+                } else if (authHeaders['Authorization']) {
+                    delete authHeaders['Authorization'];
+                }
+            }
+
+            function validateApiToken(apiToken) {
+                return $http.post($rootScope.validationEndpoint, {}, {
+                    headers: {
+                        'Authorization': 'Bearer ' + apiToken
+                    }
+                });
+            }
+
+
+            return {
+                logout: function() {
+                    // Delete user from local Storage and clean the HTTP headers
+                    delete authHeaders['Authorization'];
+                    localStorage.removeItem('user');
+                    delete $rootScope.user;
+
+                },
+
+                login: function (apiToken) {
+                        var self = this,
+                        deferred = $q.defer(),
+                        user;
+
+                    // If user is still in localstorage so will be the AuthHeaders used by the Http interceptor
+                    // Gotta clean them all before attempting to validate the new token.
+                    self.logout();
+
+                    validateApiToken(apiToken).success(function (data, status) {
+                               user = storeUser(data);
+                        setHeadersForUser(user);
+                        deferred.resolve(user);
+                    }).error(function (data,status) {
+                        console.log("ERROR: ", data, status);
+                        deferred.reject();
+                    });
+                    return deferred.promise;
+                },
+                // Returns a promise that will be resolved if the user exists and is valid
+                // and rejected if not
+                isLoggedIn: function () {
+                    var user,
+                        self = this,
+                        deferred = $q.defer();
+
+                    if (_($rootScope.user).isUndefined()) {
+                        //It might be in the localStorage
+                        user = getUserFromStorage();
+                        if (!_(user).isUndefined()) {
+                            $rootScope.user = user;
+                            setHeadersForUser(user);
+                            deferred.resolve(user);
+                        } else {
+                            deferred.reject();
+                        }
+                    } else {
+                        deferred.resolve($rootScope.user);
+                    }
+                    return deferred.promise;
+                },
+                getAuthenticationHeaders: function() {
+                    return authHeaders;
+                }
+            };
+        }
+    ])
     .factory('Base64', function () {
         /* jshint ignore:start */
      

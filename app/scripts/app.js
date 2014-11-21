@@ -14,13 +14,37 @@ angular.module('codemotion', [
             'self'
         ]);
     }]
-).run(['$rootScope', '$http', 'Base64', function ($rootScope, $http, Base64) {
-    // var authHeader = Base64.encode('my-client-with-secret' + ':' + 'secret');
-    // $http.get('http://localhost:8080/oauth/token?grant_type=client_credentials', {
-    //     headers: {
-    //         Authorization: authHeader
-    //     }
-    // }).then(function success (response) {
-    //     console.log(response);
-    // });
-}]);
+).run(['$rootScope', '$http', '$window', 'AuthService', 'ENV_INFO',
+  function ($rootScope, $http, $window, AuthService, ENV_INFO) {
+  $rootScope.authenticationEndpoint = ENV_INFO.authenticationEndpoint;
+    $rootScope.validationEndpoint = ENV_INFO.validationEndpoint;
+    $rootScope.$on('$stateChangeStart', function (event, next, current) {
+        AuthService.isLoggedIn()
+        // AuthService returns a promise that will be rejected when user is not logged in
+        .catch(function () {
+            // if (!(next.name === 'login' || next.name ==='forbidden')) {
+            //     event.preventDefault();
+            //     $window.location = $rootScope.authenticationEndpoint;
+            // }
+        });
+    });
+  }
+])
+.controller('LoginCtrl', ['$rootScope', '$scope', '$stateParams', '$state', 'AuthService',
+    function ($rootScope, $scope, $stateParams, $state, AuthService) {
+
+        if (typeof $stateParams.token === 'string') {
+
+            var token = $stateParams.token;
+            if (!_(token).isEmpty()) {
+                AuthService.login(token).then(function success(user) {
+                  $state.go('gamesList');
+                });
+            } else if($stateParams.error && $stateParams.error === 'access_denied') {
+                delete $rootScope.user;
+            } else {
+                delete $rootScope.user;
+            }
+        }
+    }
+]);
