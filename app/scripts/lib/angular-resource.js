@@ -56,7 +56,8 @@ angular.module('ngResource', ['ng']).
       'save':   {method:'POST'},
       'query':  {method:'GET', isArray:true},
       'remove': {method:'DELETE'},
-      'delete': {method:'DELETE'}
+      'delete': {method:'DELETE'},
+      'update': {method:'PUT'}
     };
     var noop = angular.noop,
         forEach = angular.forEach,
@@ -168,7 +169,8 @@ angular.module('ngResource', ['ng']).
 
     function resourceFactory(url, paramDefaults, actions, config) {
       var route = new Route(url),
-        arrayKeys = config && config.arrayKeys;
+        arrayKeys = config && config.arrayKeys,
+        fields = config && config.fields;
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
@@ -186,10 +188,60 @@ angular.module('ngResource', ['ng']).
       function defaultResponseInterceptor(response) {
         return response.resource;
       }
+      // Performs a quick initialization for a given field based on parameters provided
+      function initializeField(self, fieldValue, fieldName) {
+          var field = fields[fieldName];
+          if (_.isUndefined(field) || _.isUndefined(fieldValue)) {
+              return undefined;
+          }
+
+          if (field.isArray) {
+              // fieldValue = unwrapArray(field, fieldValue);
+
+              // forEach(fieldValue, function (element, index) {
+              //     if (isFunction(field.loader)) {
+              //         fieldValue[index] = element = field.loader.apply(self, [element]);
+              //     }
+
+              //     fieldValue[index] = initializeResource(self, field.resource, element);
+              // });
+
+              // TODO: Still have to implement watching the collection for changes: $rootScope.$watchCollection
+
+          } else {
+              if (isFunction(field.loader)) {
+                  fieldValue = field.loader.apply(self, [fieldValue]);
+              }
+
+              // fieldValue = initializeResource(self, field.resource, fieldValue);
+          }
+
+          return fieldValue;
+      }
+
 
       function Resource(value){
+        var self = this;
+
         shallowClearAndCopy(value || {}, this);
+
+        if (fields) {
+          forEach(fields, function (field, fieldName) {
+            self[fieldName] = initializeField(self, self[fieldName], fieldName);
+          });
+        }
       }
+
+      extend(Resource.prototype, {
+        $dumpData: function (data) {
+          data = data || this;
+
+          if (fields) {
+            return _.pick(data, _.keys(fields));
+          }
+          return data;
+        }
+      });
 
       forEach(actions, function(action, name) {
         var hasBody = /^(POST|PUT|PATCH)$/i.test(action.method);
@@ -235,7 +287,7 @@ angular.module('ngResource', ['ng']).
           /* jshint +W086 */ /* (purposefully fall through case statements) */
 
           var isInstanceCall = this instanceof Resource;
-          var value = isInstanceCall ? data : (action.isArray ? [] : new Resource(data));
+          var value = isInstanceCall ? data : (action.isArray ? [] : {});
           var httpConfig = {};
           var responseInterceptor = action.interceptor && action.interceptor.response ||
                                     defaultResponseInterceptor;
@@ -248,7 +300,7 @@ angular.module('ngResource', ['ng']).
             }
           });
 
-          if (hasBody) httpConfig.data = data;
+          if (hasBody) httpConfig.data = Resource.prototype.$dumpData.apply(this, [data]);
           route.setUrlParams(httpConfig,
                              extend({}, extractParams(data, action.params || {}), params),
                              action.url);
@@ -276,7 +328,9 @@ angular.module('ngResource', ['ng']).
                   value.push(new Resource(item));
                 });
               } else {
-                shallowClearAndCopy(data, value);
+                value = value instanceof Resource
+                  ? extend(value, data)
+                  : new Resource(data);
                 value.$promise = promise;
               }
             }
