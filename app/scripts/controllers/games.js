@@ -1,10 +1,8 @@
 'use strict';
 
 angular.module('codemotion')
-    .controller('GamesCtrl', ['$scope', '$http', 'API_URLS', function ($scope, $http, API_URLS) {
-        $http.get(API_URLS.GAMES).then(function success(response) {
-            $scope.games = response.data.game;
-        });
+    .controller('GamesCtrl', ['$scope', '$http', 'Game', 'API_URLS', function ($scope, $http, Game, API_URLS) {
+        $scope.games = Game.query();
     }])
     .controller('GameCtrl', ['$http', '$stateParams', '$q', '$scope', 'API_URLS', function ($http, $stateParams, $q, $scope, API_URLS) {
         $scope.data = {

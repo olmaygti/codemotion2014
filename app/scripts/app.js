@@ -4,6 +4,7 @@ angular.module('codemotion', [
   'ngResource',
   'ui.router',
   'codemotion.configuration',
+  'codemotion.models',
   'codemotion.services'
 ]).config(['$sceDelegateProvider', '$httpProvider',
     function($sceDelegateProvider, $httpProvider) {
