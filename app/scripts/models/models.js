@@ -30,5 +30,12 @@ angular.module('codemotion.models', ['ngResource', 'codemotion.configuration'])
                     }
                 });
         }
+    ])
+    .factory('Operator', [
+        '$resource',
+        'API_URLS',
+        function ($resource, URLS) {
+            return $resource(URLS.OPERATOR, {gameId: '@gameId', id: '@id'});
+        }
     ]);
 

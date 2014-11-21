@@ -228,6 +228,20 @@ angular.module('ngResource', ['ng']).
         if (fields) {
           forEach(fields, function (field, fieldName) {
             self[fieldName] = initializeField(self, self[fieldName], fieldName);
+
+            self.$watch(fieldName, function (prop, oldValue, newValue) {
+              newValue = initializeField(self, newValue, prop);
+              if (oldValue !== newValue && !fields[fieldName].avoidDump) {
+                self.$dirty = self.$dirty || {};
+                // Edge case, $dirty[prop] can be null when
+                // the field has no initial value
+                if (!(prop in self.$dirty)) {
+                    self.$dirty[prop] = oldValue;
+                }
+              }
+              return newValue;
+            });
+
           });
         }
       }
@@ -252,7 +266,19 @@ angular.module('ngResource', ['ng']).
             dumpedData = data;
           }
           return dumpedData;
-        }
+        },
+        $isDirty: function () {
+          return this.$dirty !== undefined;
+        },
+        $clean: function() {
+          var self = this;
+          if (self.$isDirty()) {
+            _(self.$dirty).keys().each(function (key) {
+              self[key] = self.$dirty[key];
+            });
+            delete self.$dirty;
+          }
+       }
       });
 
       forEach(actions, function(action, name) {
