@@ -166,8 +166,9 @@ angular.module('ngResource', ['ng']).
     };
 
 
-    function resourceFactory(url, paramDefaults, actions) {
-      var route = new Route(url);
+    function resourceFactory(url, paramDefaults, actions, config) {
+      var route = new Route(url),
+        arrayKeys = config && config.arrayKeys;
 
       actions = extend({}, DEFAULT_ACTIONS, actions);
 
@@ -260,9 +261,13 @@ angular.module('ngResource', ['ng']).
               // Need to convert action.isArray to boolean in case it is undefined
               // jshint -W018
               if (angular.isArray(data) !== (!!action.isArray)) {
-                throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected ' +
-                  'response to contain an {0} but got an {1}',
-                  action.isArray?'array':'object', angular.isArray(data)?'array':'object');
+                if (action.isArray && arrayKeys != undefined) {
+                  data = lookupDottedPath(data, arrayKeys);
+                } else {
+                  throw $resourceMinErr('badcfg', 'Error in resource configuration. Expected ' +
+                    'response to contain an {0} but got an {1}',
+                    action.isArray?'array':'object', angular.isArray(data)?'array':'object');
+                }
               }
               // jshint +W018
               if (action.isArray) {
