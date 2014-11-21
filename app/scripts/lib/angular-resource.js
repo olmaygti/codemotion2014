@@ -235,11 +235,23 @@ angular.module('ngResource', ['ng']).
       extend(Resource.prototype, {
         $dumpData: function (data) {
           data = data || this;
+          if (data === undefined) { return data; }
 
+          var dumpedData = {};
           if (fields) {
-            return _.pick(data, _.keys(fields));
+            forEach(fields, function (field, fieldName) {
+              var fieldValue = data[fieldName];
+              if (field.avoidDump || _.isUndefined(fieldValue)) {
+                  return;
+              }
+              dumpedData[fieldName] = isFunction(field.dumper)
+                  ? field.dumper.apply(dumpedData, [fieldValue])
+                  : fieldValue;
+            });
+          } else {
+            dumpedData = data;
           }
-          return data;
+          return dumpedData;
         }
       });
 
@@ -383,6 +395,33 @@ angular.module('ngResource', ['ng']).
       Resource.bind = function(additionalParamDefaults){
         return resourceFactory(url, extend({}, paramDefaults, additionalParamDefaults), actions);
       };
+
+      Object.defineProperty(Resource.prototype, "$watch", {
+        enumerable: false,
+        configurable: true,
+        writable: false,
+        value: function (prop, handler) {
+          var oldval = this[prop],
+            newval = oldval,
+            getter = function () {
+                    return newval;
+            },
+            setter = function (val) {
+                    oldval = newval;
+                    newval = handler.call(this, prop, oldval, val);
+                    return newval;
+            };
+
+          if (delete this[prop]) { // can't watch constants
+            Object.defineProperty(this, prop, {
+                get: getter,
+                set: setter,
+                enumerable: true,
+                configurable: true
+            });
+          }
+        }
+      });
 
       return Resource;
     }

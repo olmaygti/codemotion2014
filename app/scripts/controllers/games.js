@@ -19,8 +19,9 @@ angular.module('codemotion')
 
         $scope.switchToEdit = function (editMode) {
             $scope.data.editingProfile = editMode;
-            if (!editMode) {
-                $scope.game = angular.copy($scope.shadowCopy);
+            console.log($scope.game.$isDirty());
+            if (!editMode && $scope.game.$isDirty()) {
+                $scope.game.$clean();
             }
         }
 
