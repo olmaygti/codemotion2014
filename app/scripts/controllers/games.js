@@ -4,16 +4,15 @@ angular.module('codemotion')
     .controller('GamesCtrl', ['$scope', '$http', 'Game', 'API_URLS', function ($scope, $http, Game, API_URLS) {
         $scope.games = Game.query();
     }])
-    .controller('GameCtrl', ['$http', '$stateParams', '$q', '$scope', 'API_URLS', function ($http, $stateParams, $q, $scope, API_URLS) {
+    .controller('GameCtrl', ['$http', '$stateParams', '$q', '$scope', 'Game', 'API_URLS', function ($http, $stateParams, $q, $scope, Game, API_URLS) {
         $scope.data = {
             editingProfile: false,
             loadingGame: true
         };
 
-        $http.get(API_URLS.GAMES + '/' + $stateParams.gameId).then(function (response) {
-            response.data.backgroundColour = '#' + response.data.backgroundColour;
-            $scope.game = response.data;
-            $scope.shadowCopy = angular.copy(response.data);
+        Game.get({id: $stateParams.gameId}).$promise.then(function (game) {
+            $scope.game = game;
+            $scope.shadowCopy = angular.copy(game);
         }).finally(function () {
             $scope.data.loadingGame =false;
         });
@@ -27,10 +26,10 @@ angular.module('codemotion')
 
         $scope.save = function () {
             var url = API_URLS.GAMES + '/' + $stateParams.gameId;
-            $http.put(url, $scope.game).then(function (response) {
+            $scope.game.$update().then(function (resource) {
                 alert('Game saved');
-                $scope.game = response.data;
-                $scope.shadowCopy = angular.copy(response.data);
+                $scope.game = resource;
+                $scope.shadowCopy = angular.copy(resource);
                 $scope.switchToEdit(false);
                 return _.map($scope.game.hostOperators, function iterator(operator) {
                     return $http.post(url + '/operator/' + operator.id, operator);
