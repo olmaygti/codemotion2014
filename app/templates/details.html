@@ -44,11 +44,11 @@
                 <label class="col-sm-3 control-label">Synopsis</label>
 
                 <div class="col-sm-9" data-ng-switch-when="false">
-                    <p class="form-control-static">{{game.profile.synopsis}}</p>
+                    <p class="form-control-static">{{game.synopsis}}</p>
                 </div>
 
                 <div class="col-sm-9" data-ng-switch-when="true">
-                    <input type="text" data-ng-model="game.profile.synopsis" class="form-control"/>
+                    <input type="text" data-ng-model="game.synopsis" class="form-control"/>
                 </div>
 
             </div>
@@ -59,11 +59,11 @@
                 <label class="col-sm-3 control-label">Description</label>
 
                 <div class="col-sm-9" data-ng-switch-when="false">
-                        <p class="form-control-static">{{game.profile.descriptionShort}}</p>
+                        <p class="form-control-static">{{game.descriptionShort}}</p>
                 </div>
 
                 <div class="col-sm-9" data-ng-switch-when="true">
-                        <textarea class="form-control" rows="6" data-ng-model="game.profile.descriptionShort"></textarea>
+                        <textarea class="form-control" rows="6" data-ng-model="game.descriptionShort"></textarea>
                 </div>
 
             </div>
@@ -71,20 +71,20 @@
             <label class="col-sm-3 control-label">VIDEO</label>
 
             <div class="col-sm-9" data-ng-switch-when="false">
-                <p class="form-control-static">{{game.profile.videoUrl}}</p>
+                <p class="form-control-static">{{game.videoUrl}}</p>
             </div>
 
             <div class="col-sm-9" data-ng-switch-when="true">
-                <input type="text" data-ng-model="game.profile.videoUrl" class="form-control"/>
+                <input type="text" data-ng-model="game.videoUrl" class="form-control"/>
             </div>
 
 
             <label class="col-sm-3 control-label">{{ translation.game.play.video.video_preview }}</label>
 
             <div class="col-sm-9">
-                    <iframe data-ng-show="game.profile.videoUrl != ''"
-                            src="{{game.profile.videoUrl}}"
-                            data-video-src="{{game.profile.videoUrl}}"
+                    <iframe data-ng-show="game.videoUrl != ''"
+                            src="{{game.videoUrl}}"
+                            data-video-src="{{game.videoUrl}}"
                             width="628"
                             height="360"
                             frameborder="0"
@@ -99,11 +99,11 @@
                 <label class="col-sm-3 control-label">Background Colour</label>
 
                 <div class="col-sm-9" data-ng-switch-when="false">
-                        <p class="form-control-static">{{game.profile.backgroundColour}}</p>
+                        <p class="form-control-static">{{game.backgroundColour}}</p>
                 </div>
 
                 <div class="col-sm-9" data-ng-switch-when="true">
-                        <input type="text" class="form-control" rows="6" data-ng-model="game.profile.backgroundColour"></input>
+                        <input type="text" class="form-control" rows="6" data-ng-model="game.backgroundColour"></input>
                 </div>
 
             </div>

@@ -13,7 +13,7 @@ angular.module('codemotion')
         };
 
         $http.get(API_URLS.GAMES + '/' + $stateParams.gameId).then(function (response) {
-            response.data.profile.backgroundColour = '#' + response.data.profile.backgroundColour;
+            response.data.backgroundColour = '#' + response.data.backgroundColour;
             $scope.game = response.data;
             $scope.shadowCopy = angular.copy(response.data);
         }).finally(function () {
@@ -35,9 +35,7 @@ angular.module('codemotion')
                 $scope.shadowCopy = angular.copy(response.data);
                 $scope.switchToEdit(false);
                 return _.map($scope.game.hostOperators, function iterator(operator) {
-                    return $http.post(url + '/operator/' + operator.id, operator).then(function (response) {
-                        console.log(response.headers('Location'));
-                    });
+                    return $http.post(url + '/operator/' + operator.id, operator);
                 });
             }).then(function (operatorsPromises) {
                 $q.all(operatorsPromises).then(function success(operatorResponses) {
